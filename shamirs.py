@@ -30,8 +30,8 @@ def generate_shares(secret, threshold, shares):
 
     for i in range(1,shares+1):
         x_coord = i
-        y_coord = 0
-        for degree in (polynomial_degree, 0, -1):
+        y_coord = secret
+        for degree in range(polynomial_degree, 0, -1):
 
             y_coord += coefficients[degree]*(x_coord)**degree
 
@@ -41,7 +41,7 @@ def generate_shares(secret, threshold, shares):
 
     print(share_values)
 
-x = generate_shares(10, 3, 5)
+x = generate_shares(12, 5, 10)
 
 
 
