@@ -57,6 +57,8 @@ def string_to_decimal(string):
 
     bit_length = len(bytes_string)
 
+    print(bytes_string)
+
     byte_decimal = 0
 
 
@@ -87,16 +89,25 @@ def decimal_to_string(decimal):
         else:
             break
 
+    zero_pad = 8 - len(decimal_in_bits) % 8
+
+    for zero in range(0,zero_pad):
+        decimal_in_bits.insert(0,0)
+
     decimal_as_byte = ''
 
     for bit in decimal_in_bits:
         decimal_as_byte += str(bit)
 
+
+
     return decimal_as_byte
 
-
-test = decimal_to_string(500000)
+test1 = string_to_decimal('lucas')
+print(test1)
+test = decimal_to_string(test1)
 print(test)
+
 
 # x = generate_shares(12, 5, 10)
 
