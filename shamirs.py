@@ -1,5 +1,4 @@
 import random
-import time
 from textwrap import wrap
 from random import randrange, seed
 
