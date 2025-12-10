@@ -24,9 +24,7 @@ def generate_shares(secret, threshold, shares):
     coefficients = [secret]
 
     for i in range(0, polynomial_degree):
-        coefficients.append(random.randrange(1, 10))
-
-    print(coefficients)
+        coefficients.append(random.randrange(1, 1000000000))
 
     share_values = []
 
@@ -41,7 +39,7 @@ def generate_shares(secret, threshold, shares):
 
         share_values.append(tuple(share_value))
 
-    print(share_values)
+    return share_values
 
 
 def string_to_decimal(string):
@@ -124,13 +122,25 @@ def decimal_to_string(decimal):
 
     return concat_letters
 
+def shamirs(secret, threshold, shares):
 
-test1 = string_to_decimal('test!')
-print(test1)
+    secret_in_decimal = string_to_decimal(secret)
 
-test = decimal_to_string(test1)
-print(test)
+    shares = generate_shares(secret_in_decimal, threshold, shares)
 
+    return shares
+
+secret_shares = shamirs('lucas', 3, 5)
+
+print(secret_shares)
+
+secret = decimal_to_string(465825915251)
+print(secret)
+
+
+#TODO:
+#   1. Make a separate notebook that brings all functions together
+#   2. and can be executed as a program
 
 # x = generate_shares(12, 5, 10)
 
