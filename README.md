@@ -5,7 +5,7 @@ I attempted to do this as much as possible by hand instead of relying on pre-bui
 in Python packages authored by others, relying only on a few key built-in packages that come<br>
 with Python 3 for unique functionalities which are hard to build myself (e.g. <code>random</code>).
 
-## 1. The algorithm
+## 1. Algorithm
 
 The algorithm allows a secret ($S$) (e.g. a passphrase, a number) to be split into any number ($n$) <br>
 of components ($S_i$), where when a threshold number of shares ($t$) are brought together the secret <br>
@@ -64,17 +64,10 @@ Next, we simply split the concatenated binary number into its 8-bit parts and we
 to characters, rebuilding the string.
 
 
-### 3. Limitations
-
-
-
-### Disclaimer
-
-This algorithm should not be used for real-world security purposes.
-Because
-
-
 ### Sources and further reading
-https://en.wikipedia.org/wiki/Shamir's_secret_sharing
+https://en.wikipedia.org/wiki/Shamir's_secret_sharing<br>
+https://en.wikipedia.org/wiki/Endianness<br>
+https://en.wikipedia.org/wiki/Finite_field_arithmetic<br>
+https://en.wikipedia.org/wiki/Modular_arithmetic<br>
 
 
