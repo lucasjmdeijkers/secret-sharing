@@ -40,7 +40,7 @@ so $n \geq t$ must be true). We can give each of the share holders a point in $x
 $(3,20)$  and $(4,29)$.
 
 ### 1.2 Finite field
-This algorithm presents two major flaws:<br>
+Implementing only the above concept presents two major flaws:<br>
 1. <b>Information leak</b><br>If the secret is a large number (i.e. a longer passphrase) the attacker can compare their share value to range the
 random noise is sampled from. If the noise is significantly smaller, the secret's magnitude is exposed.<br>
 <br>For example, if $S = 1,234,567,890,120,000$ and two coefficients are sampled from $[-10^9, 10^9]$
@@ -57,7 +57,20 @@ by a non-factor, Python switches to floating-point math which, when dealing with
 to be reconstructed.
 
 Both these flaws are elegantly addressed by switching from a infitine field (the infinite number lines of the axes on a 
-Cartesian plane) to a finite field that wraps around.
+Cartesian plane) to a finite field that wraps around. A classic analogy is a clock, which a finite field arithmetic defined
+as modulo $12$ ($p$), where $9+5$ is $14$ in a infinite field, it is $2$ in a finite field that only goes to $12$ and loops back onto
+itself from there (it is called modulo 12 because $14\%12$ gives us the remainder $2$ which is the outcome after being mapped to 
+this finite field). Every operation is run through this modulo function.<br>
+
+Since the numbers wrap around it is impossible to tell the original magnitudes of the secret and the noise. If the share is 
+$10$ it is impossible to know if it is $6+4$ or $6 + 16$ or $30 + 4$, all are equally likely. Additionally, we replace standard
+division ($\div a$) with modular inverse ($\times a^{-1} (\mathrm{mod}\;p)$), which forces integer only division.<br>
+
+To do this correctly we have to chose a $p$ which is a) prime and b) bigger than the secret can be (in its decimal form)
+, which forces us to restrict the size of the secret. I chose a 256-bit prime number which gives a huge search space which
+provides security and can contain very large secrets.
+
+
 
 ## 2. Implementation details
 My implementation is simple programming of the logic explained above; but I think two subtle steps deserve explanation.<br>
