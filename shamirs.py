@@ -6,6 +6,9 @@ from random import randrange, seed
 #TODO: Implement finite field modulo a prime for enhanced security and numerical stability
 #TODO: Make shares customisable
 
+NIST_P256_HEX = 'FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF'
+p = int(NIST_P256_HEX,16)
+
 # NOTE: AS-IS THIS ENCRYPTION ALGORITHM IS NOT SECURE FOR REAL-WORLD USES.
 
 random.seed()
@@ -29,7 +32,7 @@ def generate_shares(secret: str, threshold: int, shares: int) -> list:
     coefficients = [secret]
 
     for i in range(0, polynomial_degree):
-        coefficients.append(random.randrange(1, 1000000000))
+        coefficients.append(random.randrange(0, p-1))
 
     # Building the share coordinates
     share_values = []
@@ -39,11 +42,13 @@ def generate_shares(secret: str, threshold: int, shares: int) -> list:
         y_coord = secret
         for degree in range(polynomial_degree, 0, -1):
 
-            y_coord += coefficients[degree]*(x_coord)**degree
+            y_coord += (coefficients[degree]*pow(x_coord,degree,p)) % p
 
         share_value = [x_coord, y_coord]
 
         share_values.append(tuple(share_value))
+
+    print(share_values)
 
     return share_values
 
@@ -156,6 +161,8 @@ def shamirs(secret: str, threshold: int, shares: int) -> list:
     """
 
     secret_in_decimal = secret_to_decimal(secret)
+    if secret_in_decimal > p:
+        raise ValueError('Your secret is too complex.')
 
     print(secret_in_decimal)
 
@@ -164,6 +171,7 @@ def shamirs(secret: str, threshold: int, shares: int) -> list:
     return shares
 
 
+test = shamirs('lucas', 3, 5)
 
 
 
