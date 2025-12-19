@@ -23,6 +23,7 @@ def program_ender():
 
         if input_close == 'q':
             program_open = False
+            quit()
         else:
             print('\n')
 
