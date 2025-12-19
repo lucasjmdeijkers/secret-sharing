@@ -97,7 +97,7 @@ def generate_shares(secret: str, threshold: int, shares: int) -> list:
 
             y_coord += (coefficients[degree]*pow(x_coord,degree,p)) % p
 
-        share_value = [x_coord, y_coord]
+        share_value = [x_coord,y_coord]
 
         share_values.append(tuple(share_value))
 
@@ -152,71 +152,6 @@ def secret_to_decimal(secret_as_string: str) -> int:
     return byte_decimal
 
 
-def decimal_to_string(decimal: int) -> str:
-    """
-    This function converts a decimal deterministically to a string via successive integer division
-    and fixed-width segmentation (8-bit).
-    
-    :param decimal: This is the secret as a decimal that is we want to reveal as a string
-    :return: The secret as a string.
-    """
-
-    decimal_in_bits = []
-
-    remaining_decimal = decimal
-
-    # The successive division into a combined binary representation of each character.
-
-    while True:
-        if remaining_decimal >= 1:
-
-            remainder = remaining_decimal % 2
-            remaining_decimal = remaining_decimal//2
-
-            decimal_in_bits.insert(0, remainder)
-        else:
-            break
-
-    # Splitting the whole secret into its individual characters using 8-bit splitting
-
-    zero_pad = 8 - len(decimal_in_bits) % 8
-
-    for zero in range(0,zero_pad):
-        decimal_in_bits.insert(0,0)
-
-    decimal_as_byte = ''
-
-    for bit in decimal_in_bits:
-        decimal_as_byte += str(bit)
-
-    n_chars = int(len(decimal_as_byte)/8)
-
-    # Rebuilding the secret from bits to ASCII values and then to characters
-
-    split_bytes = []
-
-    for char in range(0,n_chars):
-        char_bytes = ''
-        for bit in range(0,8):
-            string_bit = decimal_as_byte[0]
-            decimal_as_byte = decimal_as_byte[1:]
-            char_bytes += string_bit
-
-
-        split_bytes.append(char_bytes)
-
-        split_ascii = list(map(lambda byte: int(byte,2), split_bytes))
-
-        split_letters = list(map(lambda ascii_char: chr(ascii_char), split_ascii))
-
-        concat_letters = ''
-
-        for letter in split_letters:
-            concat_letters += letter
-
-
-    return concat_letters
-
 def shamirs(secret: str, threshold: int, shares: int) -> list:
     """
     This function handles the full building of Shamirs secret sharing algorithm utilising sub-functions defined earlier.
@@ -239,126 +174,27 @@ def shamirs(secret: str, threshold: int, shares: int) -> list:
 
     return shares
 
-list_of_shares = [
-    (1, 15285250019453219727971603974191764542590836277362097774875972258422033623379),
-    (2, 30570500038906439455943207948383529085181672554724195549751944516378241331507),
-    (3, 45855750058359659183914811922575293627772508832086293324627916774334449039635)
-]
+if __name__ == "__main__":
+    input_secret    = str(input("Please enter the passphrase you want to encrypt: "))
+    try:
+        input_shares_no = int(input("How many people do you want to give shares to?: "))
+    except ValueError as e:
+        print('Error! Please pass an integer.')
+        program_ender()
 
-def product_except_self(lst):
-    n = len(lst)
+    try:
+        input_threshold = int(input("At a minimum, how many shares need to come together to decrypt the secret?: "))
+    except ValueError as e:
+        print('Error! Please pass an integer.')
+        program_ender()
 
-    prod_list = []
+    shares_output = shamirs(input_secret, input_threshold, input_shares_no)
 
-    elements_before = 0
-    elements_after = 0
+    print('These are the shares to distribute among your shareholders:')
+    for share in shares_output:
+        print(f'{share} \n')
 
-    for pointer in range(n):
-        prod = 1
-
-        elements_after = (n - pointer - 1)
-        elements_before = pointer
-
-        for element in range(elements_before):
-            prod = (prod * lst[element][0]) % p
-
-        for element in range(1,elements_after+1):
-            index = pointer + element
-            prod = (prod * lst[index][0]) % p
-
-        prod = prod % p
-        prod_list.append(prod)
-
-    return prod_list
-
-
-def gaps(lst):
-    n = len(lst)
-
-    prod_gap_list = []
-
-    elements_before = 0
-    elements_after = 0
-
-    for pointer in range(n):
-        prod = 1
-
-        elements_after = (n - pointer - 1)
-        elements_before = pointer
-
-        for element in range(elements_before):
-            prod *= (lst[element][0] - lst[pointer][0]) % p
-
-        for element in range(1,elements_after+1):
-            index = pointer + element
-            prod *= (lst[index][0] - lst[pointer][0]) % p
-
-
-        prod_gap_list.append(prod)
-
-    return prod_gap_list
-
-
-def reconstruct_secret(shares: list) -> str:
-    """
-    This function reveals the secret when the threshold amount of shares are given.
-
-    NOTE: a result is returned regardless of if the threshold is met, and there is no
-    check to make sure whether it is or not. The 'revealed secret' will be nonsense if not enough
-    shares are given
-
-    :param shares: This is a list of the shares that are passed.
-    :return: The revealed secret.
-    """
-    weight_dict = {}
-
-    for i in range(len(shares)):
-        # Fermat's litle theorem
-        weight_dict[i] = product_except_self(shares)[i] * pow(gaps(shares)[i],p-2,p)
-
-    reconstructed_secret = 0
-
-    applied_weights = [weight_dict[x-1] * y for x, y in shares]
-
-    for weighted_share in applied_weights:
-        reconstructed_secret =  ( reconstructed_secret + weighted_share ) % p
-
-    reconstructed_secret = reconstructed_secret % p
-
-    return reconstructed_secret
-
-x = reconstruct_secret(list_of_shares)
-
-y = decimal_to_string(x)
-
-print(x)
-print(y)
-
-
-
-reconstruct_secret(list_of_shares)
-
-
-# input_secret    = str(input("Please enter the passphrase you want to encrypt: "))
-# try:
-#     input_shares_no = int(input("How many people do you want to give shares to?: "))
-# except ValueError as e:
-#     print('Error! Please pass an integer.')
-#     program_ender()
-#
-# try:
-#     input_threshold = int(input("At a minimum, how many shares need to come together to decrypt the secret?: "))
-# except ValueError as e:
-#     print('Error! Please pass an integer.')
-#     program_ender()
-#
-# shares_output = shamirs(input_secret, input_threshold, input_shares_no)
-#
-# print('These are the shares to distribute among your shareholders:')
-# for share in shares_output:
-#     print(f'{share} \n')
-#
-# program_ender()
+    program_ender()
 
 
 
