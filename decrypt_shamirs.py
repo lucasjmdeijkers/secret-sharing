@@ -1,3 +1,5 @@
+import ast
+
 from encrypt_shamirs import program_ender, p
 from time import sleep
 
@@ -138,7 +140,8 @@ def reconstruct_secret(shares: list) -> str:
 
     reconstructed_secret = 0
 
-    applied_weights = [weight_dict[x-1] * y for x, y in shares]
+    for i in range(len(shares)):
+        applied_weights = [weight_dict[i] * y for x, y in shares]
 
     for weighted_share in applied_weights:
         reconstructed_secret =  ( reconstructed_secret + weighted_share ) % p
@@ -147,20 +150,25 @@ def reconstruct_secret(shares: list) -> str:
 
     return reconstructed_secret
 
+
 if __name__ == "__main__":
     print("This program allows you to reveal an secret encrypted via Shamir's secret sharing algorithm.")
     print("Note: You must have the threshold number of shares as specified during encryption!\n")
     sleep(0.5)
     number_of_collected_shares = int(input("How many shares have you collected?: "))
+    print("\n")
     sleep(0.5)
-    print("Each share consists of two elements: (x, y).")
+    print("Each share consists of two elements: (x,y).")
     print("Please enter both elements of each share in the correct order.")
+    print("NOTE!: Do not include any leading or trailing whitespaces around or within the values")
+    print("\n")
     sleep(0.5)
 
     shares = []
 
     for i in range(number_of_collected_shares):
-        share = tuple(input(f'Please enter the elements of share {i+1}: '))
+        share = ast.literal_eval(input(f'Please enter the elements of share {i+1}: '))
+        share = (share[0], share[1])
         shares.append(share)
 
     print("Thank you.\n")
