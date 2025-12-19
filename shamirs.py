@@ -245,12 +245,6 @@ list_of_shares = [
     (3, 45855750058359659183914811922575293627772508832086293324627916774334449039635)
 ]
 
-# print(list_of_shares[0][1])
-
-test_list = [4,6]
-
-print(test_list)
-
 def product_except_self(lst):
     n = len(lst)
 
@@ -266,16 +260,47 @@ def product_except_self(lst):
         elements_before = pointer
 
         for element in range(elements_before):
-            prod *= lst[element]
+            prod = (prod * lst[element][0]) % p
 
         for element in range(1,elements_after+1):
             index = pointer + element
-            prod *= lst[index]
+            prod = (prod * lst[index][0]) % p
 
-
+        prod = prod % p
         prod_list.append(prod)
 
     return prod_list
+
+
+def gaps(lst):
+    n = len(lst)
+
+    prod_gap_list = []
+
+    elements_before = 0
+    elements_after = 0
+
+    for pointer in range(n):
+        prod = 1
+
+        elements_after = (n - pointer - 1)
+        elements_before = pointer
+
+        for element in range(elements_before):
+            prod *= (lst[element][0] - lst[pointer][0]) % p
+
+        for element in range(1,elements_after+1):
+            index = pointer + element
+            prod *= (lst[index][0] - lst[pointer][0]) % p
+
+
+        prod_gap_list.append(prod)
+
+    return prod_gap_list
+
+
+
+
 
 
 def reconstruct_secret(shares: list) -> str:
@@ -292,12 +317,11 @@ def reconstruct_secret(shares: list) -> str:
     weight_dict = {}
 
     for i in range(len(shares)):
-        weight_dict[i] = shares[i+1][1] * shares[i+2][1]
+        weight_dict[i] = product_except_self(shares)[i]
 
+    print(weight_dict)
 
-# reconstruct_secret(list_of_shares)
-
-
+reconstruct_secret(list_of_shares)
 
 
 # input_secret    = str(input("Please enter the passphrase you want to encrypt: "))
