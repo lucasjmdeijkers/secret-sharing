@@ -239,28 +239,87 @@ def shamirs(secret: str, threshold: int, shares: int) -> list:
 
     return shares
 
-# def reconstruct_secret()
+list_of_shares = [
+    (1, 15285250019453219727971603974191764542590836277362097774875972258422033623379),
+    (2, 30570500038906439455943207948383529085181672554724195549751944516378241331507),
+    (3, 45855750058359659183914811922575293627772508832086293324627916774334449039635)
+]
 
-input_secret    = str(input("Please enter the passphrase you want to encrypt: "))
-try:
-    input_shares_no = int(input("How many people do you want to give shares to?: "))
-except ValueError as e:
-    print('Error! Please pass an integer.')
-    program_ender()
+# print(list_of_shares[0][1])
 
-try:
-    input_threshold = int(input("At a minimum, how many shares need to come together to decrypt the secret?: "))
-except ValueError as e:
-    print('Error! Please pass an integer.')
-    program_ender()
+test_list = [4,6]
 
-shares_output = shamirs(input_secret, input_threshold, input_shares_no)
+print(test_list)
 
-print('These are the shares to distribute among your shareholders:')
-for share in shares_output:
-    print(f'{share} \n')
+def product_except_self(lst):
+    n = len(lst)
 
-program_ender()
+    prod_list = []
+
+    elements_before = 0
+    elements_after = 0
+
+    for pointer in range(n):
+        prod = 1
+
+        elements_after = (n - pointer - 1)
+        elements_before = pointer
+
+        for element in range(elements_before):
+            prod *= lst[element]
+
+        for element in range(1,elements_after+1):
+            index = pointer + element
+            prod *= lst[index]
+
+
+        prod_list.append(prod)
+
+    return prod_list
+
+
+def reconstruct_secret(shares: list) -> str:
+    """
+    This function reveals the secret when the threshold amount of shares are given.
+
+    NOTE: a result is returned regardless of if the threshold is met, and there is no
+    check to make sure whether it is or not. The 'revealed secret' will be nonsense if not enough
+    shares are given
+
+    :param shares: This is a list of the shares that are passed.
+    :return: The revealed secret.
+    """
+    weight_dict = {}
+
+    for i in range(len(shares)):
+        weight_dict[i] = shares[i+1][1] * shares[i+2][1]
+
+
+# reconstruct_secret(list_of_shares)
+
+
+
+
+# input_secret    = str(input("Please enter the passphrase you want to encrypt: "))
+# try:
+#     input_shares_no = int(input("How many people do you want to give shares to?: "))
+# except ValueError as e:
+#     print('Error! Please pass an integer.')
+#     program_ender()
+#
+# try:
+#     input_threshold = int(input("At a minimum, how many shares need to come together to decrypt the secret?: "))
+# except ValueError as e:
+#     print('Error! Please pass an integer.')
+#     program_ender()
+#
+# shares_output = shamirs(input_secret, input_threshold, input_shares_no)
+#
+# print('These are the shares to distribute among your shareholders:')
+# for share in shares_output:
+#     print(f'{share} \n')
+#
+# program_ender()
 
 
 
