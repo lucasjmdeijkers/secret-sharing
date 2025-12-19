@@ -299,10 +299,6 @@ def gaps(lst):
     return prod_gap_list
 
 
-
-
-
-
 def reconstruct_secret(shares: list) -> str:
     """
     This function reveals the secret when the threshold amount of shares are given.
@@ -317,9 +313,28 @@ def reconstruct_secret(shares: list) -> str:
     weight_dict = {}
 
     for i in range(len(shares)):
-        weight_dict[i] = product_except_self(shares)[i]
+        # Fermat's litle theorem
+        weight_dict[i] = product_except_self(shares)[i] * pow(gaps(shares)[i],p-2,p)
 
-    print(weight_dict)
+    reconstructed_secret = 0
+
+    applied_weights = [weight_dict[x-1] * y for x, y in shares]
+
+    for weighted_share in applied_weights:
+        reconstructed_secret =  ( reconstructed_secret + weighted_share ) % p
+
+    reconstructed_secret = reconstructed_secret % p
+
+    return reconstructed_secret
+
+x = reconstruct_secret(list_of_shares)
+
+y = decimal_to_string(x)
+
+print(x)
+print(y)
+
+
 
 reconstruct_secret(list_of_shares)
 
