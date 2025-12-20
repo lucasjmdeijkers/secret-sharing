@@ -4,8 +4,6 @@ from textwrap import wrap
 from random import randrange, seed
 
 #TODO: Use security safe pseudo-RNG from module 'secrets'
-#TODO: Make secrets reversible
-#TODO: Add input feature
 #TODO: Cleanup code
 
 NIST_P256_HEX = 'FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF'
