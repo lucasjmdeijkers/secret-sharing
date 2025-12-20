@@ -140,8 +140,7 @@ def reconstruct_secret(shares: list) -> str:
 
     reconstructed_secret = 0
 
-    for i in range(len(shares)):
-        applied_weights = [weight_dict[i] * y for x, y in shares]
+    applied_weights = [weight_dict[i] * y for i,(x,y) in enumerate(shares)]
 
     for weighted_share in applied_weights:
         reconstructed_secret =  ( reconstructed_secret + weighted_share ) % p
@@ -149,6 +148,7 @@ def reconstruct_secret(shares: list) -> str:
     reconstructed_secret = reconstructed_secret % p
 
     return reconstructed_secret
+
 
 
 if __name__ == "__main__":
