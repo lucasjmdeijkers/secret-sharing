@@ -29,12 +29,10 @@ a parabola's equation can be identified if we know three points on the parabola,
 The basic idea is that the secret, when encoded as a number, is the y-intercept of your polynomial.<br>
 The degree of the polynomial is your threshold $t-1$. So if $S = 5$ and $t = 3$, we create a polynomial<br>
 $y = a_1x^2 + a_2x + 5$ - a quadratic polynomial that requires three points to uniquely define.<br>
-The coefficients $a_1$ and $a_2$ are randomly chosen and determine the sign and magnitude or the parabola<br>
-and the horizontal shift, respectively. This represents the 'noise' that makes the polynomial swing and vary wildly and obscures the secret.
-This make it so that given less than $t$ shares, it is impossible to know <br>
-the exact function and thus the secret.<br>
+The remaining coefficients are sampled randomly, making the polynomial unpredictable without the required number of shares.
+It is impossible to know the exact function and thus the secret.<br>
 
-Once the polynomial is built, each shareholder is than given a point on it. For example, say the resulting<br>
+Once the polynomial is built, each shareholder is then given a point on it. For example, say the resulting<br>
 polynomial is $y = x^2 + 2x + 5$ and we want to distribute 4 shares (remember, at least three are needed
 so $n \geq t$ must be true). We can give each of the share holders a point in $x \in \{1,2,3,4\}$, so $(1,8)$, $(2,13)$, <br>
 $(3,20)$  and $(4,29)$.
@@ -52,29 +50,24 @@ billion potential numbers.<br>
 When a large amount of shares or shares with relatively high x coordinates are used, the resulting y-coordinate becomes
 exponentially large (e.g. moving very far to the right on a parabola). To go from the combined shares to the polynomial
 or the directly to the y-intercept via Lagrange interpolation requires division. If the share x coordinates force a division
-by a non-factor, Python switches to floating-point math which, when dealing with numbers that exceed the bit-size representation
+by a non-factor, Python switches to floating-point which, when dealing with numbers that exceed the bit-size representation
 (e.g. recurring numbers), can cause precision errors in the less significant digits. This means that the secret can fail
 to be reconstructed.
 
-Both these flaws are elegantly addressed by switching from a infitine field (the infinite number lines of the axes on a 
-Cartesian plane) to a finite field that wraps around. A classic analogy is a clock, which a finite field arithmetic defined
-as modulo $12$ ($p$), where $9+5$ is $14$ in a infinite field, it is $2$ in a finite field that only goes to $12$ and loops back onto
-itself from there (it is called modulo 12 because $14\%12$ gives us the remainder $2$ which is the outcome after being mapped to 
-this finite field). Every operation is run through this modulo function.<br>
-
-Since the numbers wrap around it is impossible to tell the original magnitudes of the secret and the noise. If the share is 
+Both these flaws are elegantly addressed by switching from an infinite field (the infinite number lines of the axes on a 
+Cartesian plane) to a finite field that wraps around. Since the numbers wrap around it is impossible to tell the original magnitudes of the secret and the noise. If the share is 
 $10$ it is impossible to know if it is $6+4$ or $6 + 16$ or $30 + 4$, all are equally likely. Additionally, we replace standard
-division ($\div a$) with modular inverse ($\times a^{-1} (\mathrm{mod}\;p)$), which forces integer-only division.<br>
+division ($\div a$) with modular inverse ($\times a^{-1} \pmod{p}$), which forces integer-only division.<br>
 
-To do this correctly we have to chose a $p$ which is a) prime and b) bigger than the secret can be (in its decimal form)
-, which forces us to restrict the size of the secret. I chose a 256-bit prime number which gives a huge search space which
+To do this correctly we have to choose a $p$ which is a) prime and b) bigger than the secret can be (in its decimal form)
+, which forces us to restrict the size of the secret. I chose the P-256 field prime which gives a huge search space which
 provides security and can contain very large secrets.
 
 
 
 ## 2. Implementation details
 My implementation is simple programming of the logic explained above; but I think two subtle steps deserve explanation.<br>
-### 2.1 Big Endian conversion 
+### 2.1 Big Endian interpretation 
 The secret passed to the main <code>generate_shares</code> function can be any string (e.g. 'dog'). Secret Sharing <br>
 involves plotting the secret as the y-intercept on a Cartesian plane, which means it must be converted to a <br>
 unique and reversible number. Which is done in function <code>secret_to_decimal</code>. In this script we chose for Big-Endian conversion. <br>
