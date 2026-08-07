@@ -1,4 +1,5 @@
 # Secret Sharing
+<b>⚠️ Educational implementation — not suitable for production cryptography.</b><br><br>
 This repository implements Shamir's Secret Sharing from scratch, including finite-field arithmetic, polynomial generation, 
 and Lagrange interpolation. The implementation avoids third-party cryptographic libraries to expose the underlying mathematics.
 
@@ -44,15 +45,6 @@ To do this correctly we have to choose a $p$ which is a) prime and b) bigger tha
 , which forces us to restrict the size of the secret. I chose the P-256 field prime which gives a huge search space which
 provides security and can contain very large secrets.
 
-## 2. Implementation details
-My implementation is simple programming of the logic explained above; but I think two subtle steps deserve explanation.<br>
-### 2.1 Secret encoding
-Secrets are converted from strings to integers by encoding each character as an 8-bit value and interpreting the resulting 
-byte sequence as a big-endian integer. The reverse process is used during reconstruction.
-
-### 2.2 Secret decoding
-During reconstruction, the resulting integer is converted back to bytes using repeated division by 2 and remainder extraction, 
-then decoded into the original string.
 
 
 ### Relevant materials
