@@ -1,5 +1,5 @@
 # Secret Sharing
-<b>⚠️ Educational implementation — not suitable for production cryptography.</b><br><br>
+<b>⚠️ Educational implementation. Not suitable for production cryptography.</b><br><br>
 This repository implements Shamir's Secret Sharing from scratch, including finite-field arithmetic, polynomial generation, 
 and Lagrange interpolation. The implementation avoids third-party cryptographic libraries to expose the underlying mathematics.
 
