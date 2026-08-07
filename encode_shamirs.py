@@ -1,29 +1,16 @@
-import random
-import os
-from textwrap import wrap
-from random import randrange, seed
+# NOTE: This is an educational implementation and should not be used
+# for production cryptographic applications.
 
-#TODO: Use security safe pseudo-RNG from module 'secrets'
-#TODO: Cleanup code
+import secrets
 
 NIST_P256_HEX = 'FFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF'
 p = int(NIST_P256_HEX,16)
 
-# NOTE: AS-IS THIS ENCRYPTION ALGORITHM IS NOT SECURE FOR REAL-WORLD USES.
-
-random.seed()
-
 def program_ender():
     print(30 * '#')
-    program_open = True
-    while program_open:
-        input_close = input("Press 'q' to close the program...")
-
-        if input_close == 'q':
-            program_open = False
-            quit()
-        else:
-            print('\n')
+    while input('Press "q" to close the program...') != 'q':
+        print()
+    quit()
 
 def generate_shares(secret: str, threshold: int, shares: int) -> list:
     """
@@ -37,45 +24,25 @@ def generate_shares(secret: str, threshold: int, shares: int) -> list:
 
     if isinstance(threshold, int):
         if threshold <= 0:
-            try:
-                raise ValueError('Threshold must be atleast 1.')
-            except ValueError as e:
-                print(f'Error: {e}')
-                program_ender()
-
+            print('Threshold must be atleast 1.')
+            program_ender()
 
         if threshold > shares:
-            try:
-                raise ValueError('Threshold must be smaller or equal to the share number.')
-            except ValueError as e:
-                print(f'Error: {e}')
-                program_ender()
-
+            print('Threshold must be smaller or equal to the share number.')
+            program_ender()
 
     else:
-        try:
-            raise ValueError('Threshold must be of type int.')
-        except ValueError as e:
-            print(f'Error: {e}')
-            program_ender()
+        print('Threshold must be of type int.')
+        program_ender()
 
     if isinstance(shares, int):
         if shares <= 0:
-            try:
-                raise ValueError('Share number must be atleast 1.')
-            except ValueError as e:
-                print(f'Error: {e}')
-                program_ender()
-
-    else:
-        try:
-            raise ValueError('Secret must be of type int.')
-        except ValueError as e:
-            print(f'Error: {e}')
+            print('Share number must be atleast 1.')
             program_ender()
 
-    # Initialises the coordinate of the secret (always at the y-intercept)
-    secret_coord = tuple([0,secret])
+    else:
+        print('Shares must be of type int.')
+        program_ender()
 
     polynomial_degree = threshold - 1
 
@@ -83,7 +50,7 @@ def generate_shares(secret: str, threshold: int, shares: int) -> list:
     coefficients = [secret]
 
     for i in range(0, polynomial_degree):
-        coefficients.append(random.randrange(0, p-1))
+        coefficients.append(secrets.randbelow(p))
 
     # Building the share coordinates
     share_values = []
@@ -115,20 +82,20 @@ def secret_to_decimal(secret_as_string: str) -> int:
     # And then to its 8-bit value
 
 
+
     if isinstance(secret_as_string,str):
         if len(secret_as_string) == 0:
-            try:
-                raise ValueError('Please enter at least one character as the secret!')
-            except ValueError as e:
-                print(f'Error: {e}')
-                program_ender()
+            print('Please enter at least one character as the secret!')
+            program_ender()
 
     else:
-        try:
-            raise ValueError('Secret must be a string.')
-        except ValueError as e:
-            print(f'Error: {e}')
-            program_ender()
+        print('Secret must be a string.')
+        program_ender()
+
+
+    if any(ord(char) > 255 for char in secret_as_string):
+        print('Secret must contain only ASCII characters.')
+        program_ender()
 
     bytes_string = ''
 
@@ -137,8 +104,6 @@ def secret_to_decimal(secret_as_string: str) -> int:
         bytes_char = str(format(ascii_char, '08b'))
 
         bytes_string += str(bytes_char)
-
-    bit_length = len(bytes_string)
 
     byte_decimal = 0
 
@@ -162,11 +127,8 @@ def shamirs(secret: str, threshold: int, shares: int) -> list:
 
     secret_in_decimal = secret_to_decimal(secret)
     if secret_in_decimal > p:
-        try:
-            raise ValueError('Your secret is too complex.')
-        except ValueError as e:
-            print(f'Error: {e}')
-            program_ender()
+        print('Your secret is too complex.')
+        program_ender()
 
     shares = generate_shares(secret_in_decimal, threshold, shares)
 

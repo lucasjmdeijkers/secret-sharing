@@ -121,7 +121,7 @@ def gaps(lst):
     return prod_gap_list
 
 
-def reconstruct_secret(shares: list) -> str:
+def reconstruct_secret(shares: list) -> int:
     """
     This function reveals the secret when the threshold amount of shares are given.
 
