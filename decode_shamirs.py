@@ -1,6 +1,6 @@
 import ast
 
-from encrypt_shamirs import program_ender, p
+from encode_shamirs import program_ender, p
 from time import sleep
 
 def decimal_to_string(decimal: int) -> str:
